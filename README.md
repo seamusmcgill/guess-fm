@@ -25,14 +25,26 @@ npm install
 npm run dev
 ```
 
-`npm run build` writes a static site to `dist/`. Deploy it anywhere (Netlify: build command
-`npm run build`, publish directory `dist`).
+`npm run build` writes a static site to `dist/`. Every push to `main` builds it and publishes it to
+GitHub Pages (`.github/workflows/deploy.yml`), so it's served under `/guess-fm/` until a custom domain
+is set, then from the root.
 
 `npm run map` regenerates `public/world.json` from the `world-atlas` package, keyed by ISO alpha-2
 country codes to match Radio Browser.
+
+`npm run cities` regenerates `public/cities.json` from Natural Earth's populated places, used to name
+the city a station is in at the end of each round.
 
 ## Being a good API citizen
 
 Radio Browser is run by volunteers. The app spreads requests across the mirrors listed at
 `all.api.radio-browser.info`, fetches just a few countries' stations per game, and reports each
 play to `/json/url/{uuid}` as the API docs ask, which keeps its popularity rankings useful.
+
+## Fonts
+
+- **LCD Bold**, the radio display: copyright © 1977, 1999 Samuel Reynolds, freeware, available from
+  <http://www.spinwardstars.com/scrfonts/>. Served as the original, unmodified `LCDBOLD.ttf`, with its
+  license in `public/fonts/LCDBOLD-license.txt`.
+- **Wild World**, headings: by [Abdullah Mosad](https://www.behance.net/abdullahneon), free for personal
+  and commercial use.

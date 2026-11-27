@@ -22,8 +22,3 @@ export function direction([lon1, lat1]: Coords, [lon2, lat2]: Coords): Direction
   const bearing = ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
   return DIRECTIONS[Math.round(bearing / 45) % 8];
 }
-
-// 📍-----🌎: one dash per 250 km, capped at 10,000 km.
-export function distanceTicks(km: number) {
-  return '-'.repeat(Math.round((Math.min(km, 10000) / 10000) * 40));
-}

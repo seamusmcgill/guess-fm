@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { cityNear, loadCities } from '../lib/cities';
 import { direction, distanceKm, type Direction } from '../lib/geo';
 import type { Station } from '../lib/radioBrowser';
 import { coords, pickRounds, type RoundStations } from '../lib/stations';
@@ -8,8 +9,9 @@ import type { Radio } from './useRadio';
 
 export const ROUNDS = 3;
 export const GUESSES_PER_ROUND = 5;
-// Pause after the last guess of a round so it shows in the results panel before the dialog.
-const ROUND_END_DELAY_MS = 600;
+// Pause after the last guess of a round while the map flies from the pin to the station (see
+// WorldMap's REVEAL_* timings), before the recap dialog covers it.
+const ROUND_END_DELAY_MS = 2150;
 
 export type Phase = 'welcome' | 'announce' | 'playing' | 'over';
 
@@ -23,7 +25,14 @@ export interface Guess {
 export interface RoundSummary {
   station: Station;
   country: string;
+  city: string | undefined;
   guesses: Guess[];
+}
+
+// Where the last pin was and where the station really is, drawn on the map as a round ends.
+export interface Reveal {
+  from: Coords;
+  to: Coords;
 }
 
 export function useGame(world: World | null, radio: Radio) {
@@ -36,6 +45,12 @@ export function useGame(world: World | null, radio: Radio) {
   const [summary, setSummary] = useState<RoundSummary | null>(null);
   const [pin, setPin] = useState<Coords | null>(null);
   const [onLand, setOnLand] = useState(true);
+  const [reveal, setReveal] = useState<Reveal | null>(null);
+  const cities = useRef<Awaited<ReturnType<typeof loadCities>>>([]);
+
+  useEffect(() => {
+    loadCities().then((list) => (cities.current = list));
+  }, []);
   const ending = useRef(false);
   const upcoming = useRef<Promise<RoundStations[]>>(null);
 
@@ -64,6 +79,7 @@ export function useGame(world: World | null, radio: Radio) {
     setGuesses([]);
     setSummary(null);
     setPin(null);
+    setReveal(null);
     setPhase('announce');
     deal();
   }, [radio, deal]);
@@ -73,6 +89,7 @@ export function useGame(world: World | null, radio: Radio) {
     ending.current = false;
     setGuesses([]);
     setPin(null);
+    setReveal(null);
     setOnLand(true);
     setPhase('playing');
     radio.tune(rounds[round].stations, round + 1);
@@ -103,7 +120,8 @@ export function useGame(world: World | null, radio: Radio) {
     ending.current = true;
     const done = [...results, { won: correct, distances: all.map((x) => x.km) }];
     setResults(done);
-    setSummary({ station, country: rounds[round].country, guesses: all });
+    setSummary({ station, country: rounds[round].country, city: cityNear(cities.current, target, rounds[round].country), guesses: all });
+    setReveal({ from: pin, to: target });
     setTimeout(() => {
       radio.stop();
       if (done.length < ROUNDS) {
@@ -128,6 +146,7 @@ export function useGame(world: World | null, radio: Radio) {
     score: results.filter((r) => r.won).length,
     summary,
     pin,
+    reveal,
     onLand,
     newGame,
     startRound,

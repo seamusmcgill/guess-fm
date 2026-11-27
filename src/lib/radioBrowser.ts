@@ -27,7 +27,7 @@ const TIMEOUT_MS = 8000;
 
 let servers: Promise<string[]> | undefined;
 
-function shuffle<T>(items: T[]): T[] {
+export function shuffle<T>(items: T[]): T[] {
   const a = [...items];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -75,13 +75,16 @@ export function getStats() {
 // (no HLS) in a codec every major browser decodes, that passed Radio Browser's last check.
 const PLAYABLE_CODECS = new Set(['MP3', 'AAC', 'AAC+']);
 
-export async function getStations(countrycode: string): Promise<Station[]> {
+// A country's playable stations, most popular first: by listener votes, or by plays through
+// Radio Browser apps.
+export async function getStations(countrycode: string, order: 'votes' | 'clickcount'): Promise<Station[]> {
   const q = new URLSearchParams({
     countrycode,
     has_geo_info: 'true',
     is_https: 'true',
     hidebroken: 'true',
-    order: 'random',
+    order,
+    reverse: 'true',
     limit: '40',
   });
   const stations = await get<Station[]>(`/json/stations/search?${q}`);

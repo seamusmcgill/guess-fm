@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { Children, useEffect, useRef, type ReactNode } from 'react';
 import Icon from './Icon';
 
 interface Props {
@@ -6,7 +6,7 @@ interface Props {
   title: string;
   // Dialogs that drive the game (welcome, round start, game over) can't be dismissed; info ones can.
   onClose?: () => void;
-  width?: 'sm' | 'md';
+  width?: 'xs' | 'sm' | 'md';
   slide?: boolean;
   children: ReactNode;
   actions?: ReactNode;
@@ -39,7 +39,8 @@ export default function Dialog({ open, title, onClose, width = 'sm', slide, chil
         </button>
       )}
       <h2 className="glow">{title}</h2>
-      <div className="dialog-content">{children}</div>
+      {/* No body at all when there's nothing in it, so a title-and-button dialog has no hole. */}
+      {Children.toArray(children).length > 0 && <div className="dialog-content">{children}</div>}
       {actions && <div className="dialog-actions">{actions}</div>}
     </dialog>
   );
