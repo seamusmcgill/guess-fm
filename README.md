@@ -48,3 +48,8 @@ play to `/json/url/{uuid}` as the API docs ask, which keeps its popularity ranki
   license in `public/fonts/LCDBOLD-license.txt`.
 - **Wild World**, headings: by [Abdullah Mosad](https://www.behance.net/abdullahneon), free for personal
   and commercial use.
+
+## License
+
+The code is [MIT](LICENSE). The fonts in `public/fonts/` aren't covered by it: each keeps its own
+license (see Fonts above).
