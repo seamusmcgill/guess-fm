@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { ROUNDS, type Game, type RoundSummary } from '../hooks/useGame';
-import { distanceTicks } from '../lib/geo';
 import { getStats } from '../lib/radioBrowser';
 import { gameStats, lifetimeStats } from '../lib/stats';
 import { countryName } from '../lib/world';
@@ -31,24 +30,24 @@ export function Instructions({ open, ready, onPlay }: { open: boolean; ready: bo
 }
 
 function RoundRecap({ summary }: { summary: RoundSummary }) {
-  const { station, country, guesses } = summary;
+  const { station, country, city, guesses } = summary;
   const last = guesses[guesses.length - 1];
-  const where = station.state && station.state.toLowerCase() !== countryName(country).toLowerCase() ? station.state : null;
+  // The city if we could name one, otherwise the region the station filed itself under.
+  const where = city ?? (station.state && station.state.toLowerCase() !== countryName(country).toLowerCase() ? station.state : null);
   return (
     <>
       <p>
         The correct answer was <strong>{countryName(country)}</strong>.{' '}
         {last.correct && `You got it in ${guesses.length} ${guesses.length === 1 ? 'guess' : 'guesses'}.`}
       </p>
-      <p>
-        The station playing was{' '}
-        <strong>{station.homepage ? <a href={station.homepage} target="_blank" rel="noreferrer">{station.name.trim()}</a> : station.name.trim()}</strong>
-        {where ? <> in <strong>{where}</strong>.</> : '.'}
-      </p>
-      <p>
-        Your pin was <strong>{last.km} km</strong> away.
-      </p>
-      <p>📍{distanceTicks(last.km)}🌎</p>
+      <dl className="recap">
+        <dt>STATION</dt>
+        <dd>{station.homepage ? <a href={station.homepage} target="_blank" rel="noreferrer">{station.name.trim()}</a> : station.name.trim()}</dd>
+        <dt>LOCATION</dt>
+        <dd>{where ? `${where}, ${countryName(country)}` : countryName(country)}</dd>
+        <dt>DISTANCE</dt>
+        <dd>{last.km.toLocaleString('en-US')} km from your pin</dd>
+      </dl>
     </>
   );
 }
@@ -75,7 +74,7 @@ export function Announcement({ game }: { game: Game }) {
   );
 
   return (
-    <Dialog open={game.phase === 'announce'} title={title} slide actions={action}>
+    <Dialog open={game.phase === 'announce'} title={title} width={round > 0 || loadFailed ? 'sm' : 'xs'} slide actions={action}>
       {round > 0 && summary && <RoundRecap summary={summary} />}
       {loadFailed && <p>Couldn’t reach the radio directory. Check your connection and try again.</p>}
     </Dialog>
@@ -143,6 +142,10 @@ export function About({ open, onClose }: { open: boolean; onClose: () => void })
       <p className="credits">
         Guess FM was built by <a href="https://github.com/andrewlpmcneill">Andrew McNeill</a>, <a href="https://github.com/ryjcm1">Jimmy Chuk</a>, and{' '}
         <a href="https://github.com/seamusmcgill">Seamus McGill</a>. Map data from <a href="https://www.naturalearthdata.com">Natural Earth</a>.
+      </p>
+      <p className="credits">
+        LCD font © 1977, 1999 Samuel Reynolds (<a href="http://www.spinwardstars.com/scrfonts/">spinwardstars.com/scrfonts</a>). Wild World font by{' '}
+        <a href="https://www.behance.net/abdullahneon">Abdullah Mosad</a>.
       </p>
     </Dialog>
   );

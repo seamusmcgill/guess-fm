@@ -33,16 +33,19 @@ export default function App() {
         </nav>
       </header>
 
-      <WorldMap world={world} pin={game.pin} onPin={game.dropPin} />
+      <WorldMap world={world} pin={game.pin} reveal={game.reveal} onPin={game.dropPin} />
 
       <Player radio={radio} round={game.round} />
-      <Results guesses={game.guesses} score={game.score} />
-      <section className="guess-panel panel">
-        {!game.onLand && <p className="hint">That’s the ocean! Drop your pin on a country.</p>}
-        <button className="btn guess" disabled={game.phase !== 'playing' || !game.pin} onClick={game.guess}>
-          GUESS
-        </button>
-      </section>
+      {/* Guesses and the guess button stack in one column, so they share an edge and a gap. */}
+      <div className="sidebar">
+        <Results guesses={game.guesses} score={game.score} />
+        <section className="guess-panel panel">
+          {!game.onLand && <p className="hint">That’s the ocean! Drop your pin on a country.</p>}
+          <button className="btn guess" disabled={game.phase !== 'playing' || !game.pin} onClick={game.guess}>
+            GUESS
+          </button>
+        </section>
+      </div>
 
       <Instructions open={game.phase === 'welcome'} ready={world != null} onPlay={game.newGame} />
       <Announcement game={game} />

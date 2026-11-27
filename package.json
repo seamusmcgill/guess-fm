@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "map": "node scripts/build-map.js"
+    "map": "node scripts/build-map.js",
+    "cities": "node scripts/build-cities.js"
   },
   "dependencies": {
     "d3-geo": "^3.1.1",
