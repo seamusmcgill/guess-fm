@@ -11,7 +11,7 @@ const NEARBY_KM = 100;
 let cities: Promise<City[]> | undefined;
 
 export function loadCities() {
-  cities ??= fetch('/cities.json')
+  cities ??= fetch(`${import.meta.env.BASE_URL}cities.json`)
     .then((r) => r.json() as Promise<City[]>)
     .catch(() => {
       cities = undefined; // try again next time

@@ -29,7 +29,7 @@ function mainland(shape: Feature<Polygon | MultiPolygon>): Feature<Polygon> {
 }
 
 export function loadWorld() {
-  world ??= fetch('/world.json')
+  world ??= fetch(`${import.meta.env.BASE_URL}world.json`) // BASE_URL is /guess-fm/ on GitHub Pages, / on a custom domain
     .then((r) => r.json() as Promise<Topology<{ countries: GeometryCollection<{ name: string }> }>>)
     .then((topo) => {
       const fc = feature(topo, topo.objects.countries);

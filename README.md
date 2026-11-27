@@ -25,8 +25,9 @@ npm install
 npm run dev
 ```
 
-`npm run build` writes a static site to `dist/`. Deploy it anywhere (Netlify: build command
-`npm run build`, publish directory `dist`).
+`npm run build` writes a static site to `dist/`. Every push to `main` builds it and publishes it to
+GitHub Pages (`.github/workflows/deploy.yml`), so it's served under `/guess-fm/` until a custom domain
+is set, then from the root.
 
 `npm run map` regenerates `public/world.json` from the `world-atlas` package, keyed by ISO alpha-2
 country codes to match Radio Browser.
